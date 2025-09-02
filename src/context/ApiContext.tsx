@@ -1,11 +1,17 @@
-import { createContext, useContext } from 'react'
+import { createContext, useContext, ReactNode } from 'react'
 
-const ApiContext = createContext({ fetchEvents: async () => [] })
+interface ApiContextType {
+  fetchEvents: (date: Date) => Promise<any[]>
+}
 
-export const ApiProvider = ({ children }) => {
-  const apiBase = import.meta.env.VITE_API_BASE_URL
+const ApiContext = createContext<ApiContextType>({
+  fetchEvents: async () => []
+})
 
-  const fetchEvents = async (date) => {
+export const ApiProvider = ({ children }: { children: ReactNode }): JSX.Element => {
+  const apiBase = import.meta.env.VITE_API_BASE_URL as string | undefined
+
+  const fetchEvents = async (date: Date): Promise<any[]> => {
     if (!apiBase) return []
     try {
       const res = await fetch(`${apiBase}/events?date=${date.toISOString()}`)
